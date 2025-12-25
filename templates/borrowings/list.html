@@ -1,0 +1,83 @@
+{% extends 'base.html' %} {% load static %} {% block title %}{{ title }}{% endblock %} {% block content %}
+
+<section class="page-section">
+  <div class="container">
+    <h1 class="page-title">Daftar Peminjaman</h1>
+
+    <!-- Active Borrowings -->
+    <div class="section-box">
+      <h2>Peminjaman Aktif</h2>
+      
+      {% if active_borrowings %}
+      <div class="table-container">
+        <table class="simple-table">
+          <thead>
+            <tr>
+              <th>Barang</th>
+              <th>Peminjam</th>
+              <th>Jumlah</th>
+              <th>Tanggal Pinjam</th>
+              <th>Catatan</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for borrowing in active_borrowings %}
+            <tr>
+              <td><a href="{% url 'item_detail' borrowing.item.id %}">{{ borrowing.item.name }}</a></td>
+              <td>{{ borrowing.borrower_name }}</td>
+              <td>{{ borrowing.quantity }}</td>
+              <td>{{ borrowing.borrow_date|date:"d M Y H:i" }}</td>
+              <td>{{ borrowing.notes|default:"-"|truncatewords:8 }}</td>
+              <td>
+                <a href="{% url 'return_item' borrowing.id %}" class="btn btn-success btn-sm" onclick="return confirm('Kembalikan barang ini?')">Kembalikan</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="empty-message">Tidak ada peminjaman aktif saat ini.</p>
+      {% endif %}
+    </div>
+
+    <!-- Returned Borrowings -->
+    <div class="section-box">
+      <h2>History Pengembalian</h2>
+      
+      {% if returned_borrowings %}
+      <div class="table-container">
+        <table class="simple-table">
+          <thead>
+            <tr>
+              <th>Barang</th>
+              <th>Peminjam</th>
+              <th>Jumlah</th>
+              <th>Tanggal Pinjam</th>
+              <th>Tanggal Kembali</th>
+              <th>Durasi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for borrowing in returned_borrowings %}
+            <tr>
+              <td>{{ borrowing.item.name }}</td>
+              <td>{{ borrowing.borrower_name }}</td>
+              <td>{{ borrowing.quantity }}</td>
+              <td>{{ borrowing.borrow_date|date:"d M Y" }}</td>
+              <td>{{ borrowing.return_date|date:"d M Y" }}</td>
+              <td>{{ borrowing.return_date|timesince:borrowing.borrow_date }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="empty-message">Belum ada history pengembalian.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

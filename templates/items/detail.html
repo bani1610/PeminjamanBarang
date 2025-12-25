@@ -1,0 +1,98 @@
+{% extends 'base.html' %} {% load static %} {% block title %}{{ title }}{% endblock %} {% block content %}
+
+<section class="page-section">
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">{{ item.name }}</h1>
+      <div class="button-group">
+        {% if item.is_available %}
+        <a href="{% url 'borrow_item' item.id %}" class="btn btn-primary">Pinjam Barang</a>
+        {% endif %}
+        <a href="{% url 'items_list' %}" class="btn btn-secondary">Kembali</a>
+      </div>
+    </div>
+
+    <!-- Item Info -->
+    <div class="info-card">
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Status</span>
+          <span class="info-value">
+            {% if item.is_available %}
+            <span class="badge badge-success">Tersedia</span>
+            {% else %}
+            <span class="badge badge-danger">Habis</span>
+            {% endif %}
+          </span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Jumlah Total</span>
+          <span class="info-value">{{ item.quantity }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Tersedia</span>
+          <span class="info-value">{{ item.available }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Sedang Dipinjam</span>
+          <span class="info-value">{{ item.quantity|add:"-"|add:item.available }}</span>
+        </div>
+      </div>
+      
+      {% if item.description %}
+      <div class="info-description">
+        <h3>Deskripsi</h3>
+        <p>{{ item.description }}</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Borrowing History -->
+    <div class="section-box">
+      <h2>History Peminjaman</h2>
+      
+      {% if borrowings %}
+      <div class="table-container">
+        <table class="simple-table">
+          <thead>
+            <tr>
+              <th>Peminjam</th>
+              <th>Jumlah</th>
+              <th>Tanggal Pinjam</th>
+              <th>Tanggal Kembali</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for borrowing in borrowings %}
+            <tr>
+              <td>{{ borrowing.borrower_name }}</td>
+              <td>{{ borrowing.quantity }}</td>
+              <td>{{ borrowing.borrow_date|date:"d M Y H:i" }}</td>
+              <td>
+                {% if borrowing.return_date %}
+                {{ borrowing.return_date|date:"d M Y H:i" }}
+                {% else %}
+                -
+                {% endif %}
+              </td>
+              <td>
+                {% if borrowing.is_returned %}
+                <span class="badge badge-success">Dikembalikan</span>
+                {% else %}
+                <span class="badge badge-warning">Dipinjam</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="empty-message">Belum ada history peminjaman untuk barang ini.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

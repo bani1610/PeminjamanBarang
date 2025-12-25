@@ -1,0 +1,113 @@
+{% extends 'base.html' %} {% load static %} {% block title %}{{ title }}{% endblock %} {% block content %}
+
+<!-- Dashboard Section -->
+<section class="dashboard">
+  <div class="container">
+    <h1 class="page-title">Dashboard Peminjaman Barang</h1>
+    
+    <!-- Stats Cards -->
+    <div class="stats-cards">
+      <div class="stat-card">
+        <div class="stat-icon">📦</div>
+        <div class="stat-info">
+          <div class="stat-number">{{ total_items }}</div>
+          <div class="stat-label">Total Barang</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-info">
+          <div class="stat-number">{{ total_available }}</div>
+          <div class="stat-label">Barang Tersedia</div>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-info">
+          <div class="stat-number">{{ active_borrowings }}</div>
+          <div class="stat-label">Sedang Dipinjam</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Recent Items -->
+    <div class="section-box">
+      <div class="section-header">
+        <h2>Barang Terbaru</h2>
+        <a href="{% url 'items_list' %}" class="btn btn-secondary btn-sm">Lihat Semua</a>
+      </div>
+      
+      {% if recent_items %}
+      <div class="table-container">
+        <table class="simple-table">
+          <thead>
+            <tr>
+              <th>Nama Barang</th>
+              <th>Jumlah</th>
+              <th>Tersedia</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in recent_items %}
+            <tr>
+              <td><a href="{% url 'item_detail' item.id %}">{{ item.name }}</a></td>
+              <td>{{ item.quantity }}</td>
+              <td>{{ item.available }}</td>
+              <td>
+                {% if item.is_available %}
+                <span class="badge badge-success">Tersedia</span>
+                {% else %}
+                <span class="badge badge-danger">Habis</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="empty-message">Belum ada barang. <a href="{% url 'item_add' %}">Tambah barang pertama</a></p>
+      {% endif %}
+    </div>
+    
+    <!-- Recent Borrowings -->
+    <div class="section-box">
+      <div class="section-header">
+        <h2>Peminjaman Aktif</h2>
+        <a href="{% url 'borrowings_list' %}" class="btn btn-secondary btn-sm">Lihat Semua</a>
+      </div>
+      
+      {% if recent_borrowings %}
+      <div class="table-container">
+        <table class="simple-table">
+          <thead>
+            <tr>
+              <th>Barang</th>
+              <th>Peminjam</th>
+              <th>Jumlah</th>
+              <th>Tanggal Pinjam</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for borrowing in recent_borrowings %}
+            <tr>
+              <td>{{ borrowing.item.name }}</td>
+              <td>{{ borrowing.borrower_name }}</td>
+              <td>{{ borrowing.quantity }}</td>
+              <td>{{ borrowing.borrow_date|date:"d M Y H:i" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="empty-message">Tidak ada peminjaman aktif saat ini.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

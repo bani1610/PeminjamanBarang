@@ -1,0 +1,57 @@
+{% extends 'base.html' %} {% load static %} {% block title %}{{ title }}{% endblock %} {% block content %}
+
+<section class="page-section">
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">Daftar Barang</h1>
+      <a href="{% url 'item_add' %}" class="btn btn-primary">+ Tambah Barang</a>
+    </div>
+
+    {% if items %}
+    <div class="table-container">
+      <table class="simple-table">
+        <thead>
+          <tr>
+            <th>Nama Barang</th>
+            <th>Deskripsi</th>
+            <th>Jumlah</th>
+            <th>Tersedia</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td><strong>{{ item.name }}</strong></td>
+            <td>{{ item.description|default:"-"|truncatewords:10 }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.available }}</td>
+            <td>
+              {% if item.is_available %}
+              <span class="badge badge-success">Tersedia</span>
+              {% else %}
+              <span class="badge badge-danger">Habis</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'item_detail' item.id %}" class="btn btn-secondary btn-sm">Detail</a>
+              {% if item.is_available %}
+              <a href="{% url 'borrow_item' item.id %}" class="btn btn-primary btn-sm">Pinjam</a>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <p>Belum ada barang yang terdaftar.</p>
+      <a href="{% url 'item_add' %}" class="btn btn-primary">Tambah Barang Pertama</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}
